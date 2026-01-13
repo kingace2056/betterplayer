@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = '1.9.22'
+        kotlin_version = '2.1.0'
         gradle_version = '8.9.0'
     }
     repositories {

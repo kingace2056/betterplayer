@@ -3,12 +3,12 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext {
-        exoPlayerVersion = "2.18.7"
+        media3Version = "1.5.0"
         lifecycleVersion = "2.6.2"
         annotationVersion = "1.7.1"
         workVersion = "2.9.0"
         coreVersion = "1.12.0"
-        kotlinVersion = "1.9.22"
+        kotlinVersion = "2.1.0"
     }
 
     repositories {
@@ -17,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'com.android.tools.build:gradle:8.6.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
@@ -63,14 +63,14 @@ android {
         implementation 'androidx.appcompat:appcompat:1.6.1'
         implementation 'androidx.media:media:1.7.0'
         
-        // ExoPlayer dependencies
-        implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-dash:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:extension-mediasession:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-datasource:$exoPlayerVersion"
+        // Media3 dependencies
+        implementation "androidx.media3:media3-exoplayer:$media3Version"
+        implementation "androidx.media3:media3-exoplayer-hls:$media3Version"
+        implementation "androidx.media3:media3-exoplayer-dash:$media3Version"
+        implementation "androidx.media3:media3-exoplayer-smoothstreaming:$media3Version"
+        implementation "androidx.media3:media3-ui:$media3Version"
+        implementation "androidx.media3:media3-session:$media3Version"
+        implementation "androidx.media3:media3-datasource:$media3Version"
         
         // AndroidX dependencies
         implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"

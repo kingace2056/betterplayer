@@ -1,6 +1,6 @@
 package  com.sarthak.better_player_enhanced
 
-import com.google.android.exoplayer2.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultLoadControl
 
 internal class CustomDefaultLoadControl {
     /**
