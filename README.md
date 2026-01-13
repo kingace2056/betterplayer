@@ -10,6 +10,8 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.27.0+-02569B?logo=flutter)](https://flutter.dev)
 [![AndroidX Media3](https://img.shields.io/badge/AndroidX%20Media3-1.5.0-green?logo=android)](https://developer.android.com/media/media3)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S71S8ARK)
+
 ## 🎯 The Most Advanced Flutter Video Player
 
 **Better Player Enhanced** is a production-ready, feature-rich video player for Flutter applications. Built upon the foundation of the original [Better Player](https://pub.dev/packages/better_player) by [jhomlala](https://github.com/jhomlala), this enhanced version brings critical updates, modern architecture, and enterprise-grade features.
