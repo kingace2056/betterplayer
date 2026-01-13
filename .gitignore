@@ -82,3 +82,4 @@ example/ios/Flutter/Debug.xcconfig
 example/ios/Flutter/Debug.xcconfig
 example/ios/Podfile
 pubspec.lock
+**/.cxx/

@@ -14,7 +14,7 @@ void main() {
     () {
       setUp(
         () => {
-          TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
               .setMockMethodCallHandler(
                   mockMethodChannel.channel, mockMethodChannel.handle)
         },

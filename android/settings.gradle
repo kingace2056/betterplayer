@@ -1,1 +1,8 @@
 rootProject.name = 'better_player_enhanced'
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}

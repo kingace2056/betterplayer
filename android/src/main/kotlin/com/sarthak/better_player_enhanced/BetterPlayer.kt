@@ -1,4 +1,4 @@
-package  com.sarthak.better_player_enhanced
+package com.sarthak.better_player_enhanced
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -13,55 +13,24 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import  com.sarthak.better_player_enhanced.DataSourceUtils.getUserAgent
-import  com.sarthak.better_player_enhanced.DataSourceUtils.isHTTP
-import  com.sarthak.better_player_enhanced.DataSourceUtils.getDataSourceFactory
+import com.sarthak.better_player_enhanced.DataSourceUtils.getUserAgent
+import com.sarthak.better_player_enhanced.DataSourceUtils.isHTTP
+import com.sarthak.better_player_enhanced.DataSourceUtils.getDataSourceFactory
 import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import io.flutter.plugin.common.MethodChannel
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import android.support.v4.media.session.MediaSessionCompat
-import com.google.android.exoplayer2.drm.DrmSessionManager
 import androidx.work.WorkManager
 import androidx.work.WorkInfo
-import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
-import com.google.android.exoplayer2.drm.FrameworkMediaDrm
-import com.google.android.exoplayer2.drm.UnsupportedDrmException
-import com.google.android.exoplayer2.drm.DummyExoMediaDrm
-import com.google.android.exoplayer2.drm.LocalMediaDrmCallback
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ClippingMediaSource
-import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescriptionAdapter
-import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
-import androidx.work.OneTimeWorkRequest
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
 import android.view.Surface
 import androidx.lifecycle.Observer
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
-import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
-import com.google.android.exoplayer2.source.dash.DashMediaSource
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import io.flutter.plugin.common.EventChannel.EventSink
 import androidx.media.session.MediaButtonReceiver
 import androidx.work.Data
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.drm.DrmSessionManagerProvider
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.SelectionOverride
-import com.google.android.exoplayer2.trackselection.TrackSelectionOverrides
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.util.Util
+import androidx.work.OneTimeWorkRequest
 import java.io.File
 import java.lang.Exception
 import java.lang.IllegalStateException
@@ -69,17 +38,35 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
+// ExoPlayer imports
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.drm.*
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.source.*
+import com.google.android.exoplayer2.source.dash.*
+import com.google.android.exoplayer2.source.hls.*
+import com.google.android.exoplayer2.source.smoothstreaming.*
+import com.google.android.exoplayer2.trackselection.*
+import com.google.android.exoplayer2.ui.*
+import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescriptionAdapter
+import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
+import com.google.android.exoplayer2.drm.DrmSessionEventListener
+
 internal class BetterPlayer(
-    context: Context,
+    private val context: Context,
     private val eventChannel: EventChannel,
     private val textureEntry: SurfaceTextureEntry,
     customDefaultLoadControl: CustomDefaultLoadControl?,
     result: MethodChannel.Result
 ) {
-    private val exoPlayer: ExoPlayer?
-    private val eventSink = QueuingEventSink()
-    private val trackSelector: DefaultTrackSelector = DefaultTrackSelector(context)
+    private val trackSelector = DefaultTrackSelector(context)
     private val loadControl: LoadControl
+    private val exoPlayer: ExoPlayer
+    private val eventSink = QueuingEventSink()
     private var isInitialized = false
     private var surface: Surface? = null
     private var key: String? = null
@@ -92,23 +79,23 @@ internal class BetterPlayer(
     private var drmSessionManager: DrmSessionManager? = null
     private val workManager: WorkManager
     private val workerObserverMap: HashMap<UUID, Observer<WorkInfo?>>
-    private val customDefaultLoadControl: CustomDefaultLoadControl =
-        customDefaultLoadControl ?: CustomDefaultLoadControl()
     private var lastSendBufferedPosition = 0L
 
     init {
         val loadBuilder = DefaultLoadControl.Builder()
         loadBuilder.setBufferDurationsMs(
-            this.customDefaultLoadControl.minBufferMs,
-            this.customDefaultLoadControl.maxBufferMs,
-            this.customDefaultLoadControl.bufferForPlaybackMs,
-            this.customDefaultLoadControl.bufferForPlaybackAfterRebufferMs
+            customDefaultLoadControl?.minBufferMs ?: 50000,
+            customDefaultLoadControl?.maxBufferMs ?: 50000,
+            customDefaultLoadControl?.bufferForPlaybackMs ?: 2500,
+            customDefaultLoadControl?.bufferForPlaybackAfterRebufferMs ?: 5000
         )
         loadControl = loadBuilder.build()
+        
         exoPlayer = ExoPlayer.Builder(context)
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
             .build()
+            
         workManager = WorkManager.getInstance(context)
         workerObserverMap = HashMap()
         setupVideoPlayer(eventChannel, textureEntry, result)
@@ -381,57 +368,67 @@ internal class BetterPlayer(
         cacheKey: String?,
         context: Context
     ): MediaSource {
-        val type: Int
-        if (formatHint == null) {
-            var lastPathSegment = uri.lastPathSegment
-            if (lastPathSegment == null) {
-                lastPathSegment = ""
-            }
-            type = Util.inferContentType(lastPathSegment)
-        } else {
-            type = when (formatHint) {
-                FORMAT_SS -> C.TYPE_SS
-                FORMAT_DASH -> C.TYPE_DASH
-                FORMAT_HLS -> C.TYPE_HLS
-                FORMAT_OTHER -> C.TYPE_OTHER
-                else -> -1
-            }
+        val type: Int = when (formatHint) {
+            FORMAT_SS -> C.TYPE_SS
+            FORMAT_DASH -> C.TYPE_DASH
+            FORMAT_HLS -> C.TYPE_HLS
+            FORMAT_OTHER -> C.TYPE_OTHER
+            else -> Util.inferContentType(uri.lastPathSegment ?: "")
         }
+
         val mediaItemBuilder = MediaItem.Builder()
         mediaItemBuilder.setUri(uri)
-        if (cacheKey != null && cacheKey.isNotEmpty()) {
+        if (!cacheKey.isNullOrEmpty()) {
             mediaItemBuilder.setCustomCacheKey(cacheKey)
         }
         val mediaItem = mediaItemBuilder.build()
-        var drmSessionManagerProvider: DrmSessionManagerProvider? = null
-        drmSessionManager?.let { drmSessionManager ->
-            drmSessionManagerProvider = DrmSessionManagerProvider { drmSessionManager }
+
+        val drmSessionManagerProvider = object : DrmSessionManagerProvider {
+            override operator fun get(mediaItem: MediaItem): DrmSessionManager {
+                if (drmSessionManager != null) {
+                    return drmSessionManager!!
+                }
+                // Create a dummy DRM session manager for non-DRM content
+                return DefaultDrmSessionManager.Builder()
+                    .setUuidAndExoMediaDrmProvider(
+                        C.CLEARKEY_UUID,
+                        FrameworkMediaDrm.DEFAULT_PROVIDER
+                    )
+                    .build(HttpMediaDrmCallback("", DefaultHttpDataSource.Factory()))
+            }
         }
+
+        val defaultDataSourceFactory = DefaultDataSourceFactory(context, mediaDataSourceFactory)
+
         return when (type) {
             C.TYPE_SS -> SsMediaSource.Factory(
                 DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                DefaultDataSource.Factory(context, mediaDataSourceFactory)
-            )
-                .setDrmSessionManagerProvider(drmSessionManagerProvider)
-                .createMediaSource(mediaItem)
+                defaultDataSourceFactory
+            ).apply {
+                setDrmSessionManagerProvider(drmSessionManagerProvider)
+            }.createMediaSource(mediaItem)
+
             C.TYPE_DASH -> DashMediaSource.Factory(
                 DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                DefaultDataSource.Factory(context, mediaDataSourceFactory)
-            )
-                .setDrmSessionManagerProvider(drmSessionManagerProvider)
-                .createMediaSource(mediaItem)
-            C.TYPE_HLS -> HlsMediaSource.Factory(mediaDataSourceFactory)
-                .setDrmSessionManagerProvider(drmSessionManagerProvider)
-                .createMediaSource(mediaItem)
+                defaultDataSourceFactory
+            ).apply {
+                setDrmSessionManagerProvider(drmSessionManagerProvider)
+            }.createMediaSource(mediaItem)
+
+            C.TYPE_HLS -> HlsMediaSource.Factory(
+                mediaDataSourceFactory
+            ).apply {
+                setDrmSessionManagerProvider(drmSessionManagerProvider)
+            }.createMediaSource(mediaItem)
+
             C.TYPE_OTHER -> ProgressiveMediaSource.Factory(
                 mediaDataSourceFactory,
                 DefaultExtractorsFactory()
-            )
-                .setDrmSessionManagerProvider(drmSessionManagerProvider)
-                .createMediaSource(mediaItem)
-            else -> {
-                throw IllegalStateException("Unsupported type: $type")
-            }
+            ).apply {
+                setDrmSessionManagerProvider(drmSessionManagerProvider)
+            }.createMediaSource(mediaItem)
+
+            else -> throw IllegalStateException("Unsupported type: $type")
         }
     }
 
@@ -508,12 +505,12 @@ internal class BetterPlayer(
         val audioComponent = exoPlayer?.audioComponent ?: return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             audioComponent.setAudioAttributes(
-                AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(),
+                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
                 !mixWithOthers
             )
         } else {
             audioComponent.setAudioAttributes(
-                AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MUSIC).build(),
+                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(),
                 !mixWithOthers
             )
         }
@@ -705,19 +702,24 @@ internal class BetterPlayer(
     private fun setAudioTrack(rendererIndex: Int, groupIndex: Int, groupElementIndex: Int) {
         val mappedTrackInfo = trackSelector.currentMappedTrackInfo
         if (mappedTrackInfo != null) {
-            val builder = trackSelector.parameters.buildUpon()
-                .setRendererDisabled(rendererIndex, false)
-                .setTrackSelectionOverrides(
-                    TrackSelectionOverrides.Builder().addOverride(
-                        TrackSelectionOverrides.TrackSelectionOverride(
-                            mappedTrackInfo.getTrackGroups(
-                                rendererIndex
-                            ).get(groupIndex)
-                        )
-                    ).build()
+            val trackGroups = mappedTrackInfo.getTrackGroups(rendererIndex)
+            if (groupIndex < trackGroups.length) {
+                val trackGroup = trackGroups[groupIndex]
+                val builder = trackSelector.parameters.buildUpon()
+                    .setRendererDisabled(rendererIndex, false)
+                
+                // Create selection override
+                val override = DefaultTrackSelector.SelectionOverride(
+                    groupIndex,
+                    groupElementIndex
                 )
-
-            trackSelector.setParameters(builder)
+                
+                // Apply the override
+                builder.setSelectionOverride(rendererIndex, trackGroups, override)
+                
+                // Set the modified parameters
+                trackSelector.setParameters(builder)
+            }
         }
     }
 

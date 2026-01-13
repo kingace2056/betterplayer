@@ -12,16 +12,16 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  wakelock_plus: ^1.2.8
-  meta: ^1.15.0
-  flutter_widget_from_html_core: ^0.15.2
+  wakelock_plus: ^1.2.10
+  meta: ^1.16.0
+  flutter_widget_from_html_core: ^0.17.0
   visibility_detector: ^0.4.0+2
   path_provider: ^2.1.5
-  collection: ^1.19.0
+  collection: ^1.19.1
   xml: ^6.5.0
 
 dev_dependencies:
-  lint: ^2.3.0
+  lint: ^2.8.0
   flutter_test:
     sdk: flutter
   flutter_localizations:

@@ -49,4 +49,13 @@ class BetterPlayerAsmsTrack {
         codecs == other.codecs &&
         mimeType == other.mimeType;
   }
+
+  Map<String, dynamic> toJson() => {
+        "width": width,
+        "height": height,
+        "bitrate": bitrate,
+        "frameRate": frameRate,
+        "codecs": codecs,
+        "mimeType": mimeType,
+      };
 }
