@@ -29,7 +29,7 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
               child: InkWell(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.purple.withOpacity(0.2),
+                    color: Colors.purple.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Padding(
@@ -57,7 +57,7 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.purple.withOpacity(0.2),
+                color: Colors.purple.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(

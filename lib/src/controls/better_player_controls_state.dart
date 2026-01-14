@@ -440,7 +440,7 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
       color: isSelected
           ? betterPlayerControlsConfiguration.overflowModalTextColor
           : betterPlayerControlsConfiguration.overflowModalTextColor
-              .withOpacity(0.7),
+              .withValues(alpha: 0.7),
     );
   }
 
