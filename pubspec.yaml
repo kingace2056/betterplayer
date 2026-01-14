@@ -1,6 +1,6 @@
 name: better_player_enhanced
 description: Advanced video player based on video_player and Chewie. Supports HLS, DASH, DRM, cache, subtitles, PiP, and much more. AndroidX Media3 powered.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/kingace2056/betterplayer
 documentation: https://jhomlala.github.io/betterplayer/
 

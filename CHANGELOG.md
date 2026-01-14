@@ -1,3 +1,7 @@
+## 1.0.1
+
+- Support Button Added on readme
+
 ## 1.0.0
 
 - 🔥 **MAJOR UPDATE** - AndroidX Media3 Migration
