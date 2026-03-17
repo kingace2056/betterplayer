@@ -1,5 +1,10 @@
 ## 1.0.1
 
+- Fixed playedPart NAN on material progressbar [by [elKood Solutions](https://github.com/ElKood-Sol)]
+- Upgraded packages [ wakelock_plus, lints ]
+
+## 1.0.1
+
 - Support Button Added on readme
 
 ## 1.0.0
