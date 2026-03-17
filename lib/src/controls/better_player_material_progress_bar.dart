@@ -243,7 +243,7 @@ class _ProgressBarPainter extends CustomPainter {
       RRect.fromRectAndRadius(
         Rect.fromPoints(
           Offset(0.0, size.height / 2),
-          Offset(playedPart, size.height / 2 + height),
+          Offset(playedPart.isNaN ? 0.0 : playedPart, size.height / 2 + height),
         ),
         const Radius.circular(4.0),
       ),
