@@ -83,6 +83,7 @@ internal class BetterPlayer(
     private var exoPlayerEventListener: Player.Listener? = null
     private var bitmap: Bitmap? = null
     private var mediaSession: MediaSessionCompat? = null
+    private var media3Session: MediaSession? = null
     private var drmSessionManager: DrmSessionManager? = null
     private val workManager: WorkManager
     private val workerObserverMap: HashMap<UUID, Observer<WorkInfo?>>
@@ -235,7 +236,7 @@ internal class BetterPlayer(
                 setUseStopAction(false)
             }
 
-            setupMediaSession(context)?.let {
+            setupMediaSession(context, textureEntry.id())?.let {
                 setMediaSessionToken(it.sessionCompatToken)
             }
         }
@@ -532,24 +533,27 @@ internal class BetterPlayer(
     /**
      * Create media session which will be used in notifications, pip mode.
      *
-     * @param context                - android context
+     * @param context   - android context
+     * @param textureId - optional unique id for the player (e.g. from texture registry)
      * @return - configured MediaSession instance
      */
     @androidx.annotation.OptIn(UnstableApi::class)
     @SuppressLint("InlinedApi")
-    fun setupMediaSession(context: Context?): MediaSession? {
+    fun setupMediaSession(context: Context?, textureId: Long? = null): MediaSession? {
+        media3Session?.release()
         mediaSession?.release()
         context?.let {
-            val media3Session = MediaSession.Builder(context, exoPlayer)
+            val uniqueId = "BetterPlayer_${textureId ?: UUID.randomUUID()}"
+            val session = MediaSession.Builder(context, exoPlayer)
+                .setId(uniqueId)
                 .build()
-            
+            this.media3Session = session
             // Keep legacy MediaSessionCompat for backwards compatibility
             this.mediaSession = MediaSessionCompat(context, TAG)
             this.mediaSession?.isActive = true
-            return media3Session
+            return session
         }
         return null
-
     }
 
     fun onPictureInPictureStatusChanged(inPip: Boolean) {
@@ -559,9 +563,9 @@ internal class BetterPlayer(
     }
 
     fun disposeMediaSession() {
-        if (mediaSession != null) {
-            mediaSession?.release()
-        }
+        media3Session?.release()
+        media3Session = null
+        mediaSession?.release()
         mediaSession = null
     }
 
