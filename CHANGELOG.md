@@ -1,7 +1,8 @@
-## 1.0.1
+## 1.0.2
 
 - Fixed playedPart NAN on material progressbar [by [elKood Solutions](https://github.com/ElKood-Sol)]
-- Upgraded packages [ wakelock_plus, lints ]
+- Upgraded packages [ wakelock_plus, lints , path_provider , collection ]
+- fixed pip mode issue on android [by [harshit-nutanix](https://github.com/harshit-nutanix)]
 
 ## 1.0.1
 
