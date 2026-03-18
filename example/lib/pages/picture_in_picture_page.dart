@@ -20,7 +20,7 @@ class _PictureInPicturePageState extends State<PictureInPicturePage> {
     );
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      Constants.elephantDreamVideoUrl,
+      Constants.bugBuckBunnyVideoUrl,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource);
