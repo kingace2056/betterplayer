@@ -340,6 +340,14 @@ bool _remoteCommandsInitialized = false;
                 [player setDataSourceAsset:assetPath withKey:key withCertificateUrl:certificateUrl withLicenseUrl: licenseUrl cacheKey:cacheKey cacheManager:_cacheManager overriddenDuration:overriddenDuration];
             } else if (uriArg) {
                 [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key withCertificateUrl:certificateUrl withLicenseUrl: licenseUrl withHeaders:headers withCache: useCache cacheKey:cacheKey cacheManager:_cacheManager overriddenDuration:overriddenDuration videoExtension: videoExtension];
+                AVPlayerItem *currentItem = player.player.currentItem;
+                    if (currentItem) {
+                        AVAsset *asset = currentItem.asset;
+                        AVMediaSelectionGroup *group = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+                        if (group) {
+                            [currentItem selectMediaOption:nil inMediaSelectionGroup:group];
+                        }
+                    }
             } else {
                 result(FlutterMethodNotImplemented);
             }
