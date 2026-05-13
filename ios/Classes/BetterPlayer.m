@@ -551,20 +551,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         result([FlutterError errorWithCode:@"unsupported_speed"
                                    message:@"Speed must be >= 0.0 and <= 2.0"
                                    details:nil]);
-    } else if ((speed > 1.0 && _player.currentItem.canPlayFastForward) ||
-               (speed < 1.0 && _player.currentItem.canPlaySlowForward)) {
+    } else {
         _playerRate = speed;
         result(nil);
-    } else {
-        if (speed > 1.0) {
-            result([FlutterError errorWithCode:@"unsupported_fast_forward"
-                                       message:@"This video cannot be played fast forward"
-                                       details:nil]);
-        } else {
-            result([FlutterError errorWithCode:@"unsupported_slow_forward"
-                                       message:@"This video cannot be played slow forward"
-                                       details:nil]);
-        }
     }
 
     if (_isPlaying){
