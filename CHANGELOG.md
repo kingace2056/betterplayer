@@ -1,3 +1,9 @@
+## 1.0.3
+
+- Removed `canPlayFastForward` and `canPlaySlowForward` checks on iOS `setSpeed`
+  - These properties incorrectly return `NO` for many valid HLS streams, causing `unsupported_fast_forward` / `unsupported_slow_forward` errors even when playback speed works fine in Safari and other players
+  - `AVPlayer` natively handles unsupported rates gracefully, so explicit checks are unnecessary
+
 ## 1.0.2
 
 - Fixed playedPart NAN on material progressbar [by [elKood Solutions](https://github.com/ElKood-Sol)]
